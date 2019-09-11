@@ -1,3 +1,8 @@
+/*
+ * @Date: 2019-09-07 22:35:20
+ * @LastEditors: PoloHuang
+ * @LastEditTime: 2019-09-08 00:11:56
+ */
 'use strict'
 const path = require('path')
 const utils = require('./utils')
@@ -35,6 +40,10 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       '@': resolve('src'),
+      'common': resolve('src/common'),
+      'components': resolve('src/components'),
+      'base': resolve('src/base'),
+      'api': resolve('src/api')
     }
   },
   module: {
