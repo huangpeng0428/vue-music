@@ -1,14 +1,15 @@
 <!--
  * @Date: 2019-09-11 23:07:04
  * @LastEditors: PoloHuang
- * @LastEditTime: 2019-09-13 00:22:57
+ * @LastEditTime: 2019-09-15 17:21:43
  -->
 <template>
     <div class="slider" ref="slider">
         <div class="slider-group" ref="sliderGroup">
-            <slot>
-
-            </slot>
+            <slot></slot>
+        </div>
+        <div class="dots">
+          <span class="dot" :class="{active: currentPageIndex === index }" v-for="(item, index) in dots" :key="index"></span>
         </div>
     </div>
 </template>
@@ -46,9 +47,33 @@ export default {
   },
   mounted () {
     setTimeout(() => {
-      this._setSliderWidth(true)
+      this._setSliderWidth()
+      this._initDots()
       this._initSlider()
+
+      if (this.autoPlay) {
+        this._play()
+      }
     }, 20)
+
+    window.addEventListener('resize', () => {
+      if (!this.slider) {
+        return
+      }
+      this._setSliderWidth(true)
+      this.slider.refresh()
+    })
+  },
+  activated () {
+    if (this.autoPlay) {
+      this._play()
+    }
+  },
+  deactivated () {
+    clearTimeout(this.timer)
+  },
+  beforeDestroy () {
+    clearTimeout(this.timer)
   },
   methods: {
     _setSliderWidth (isResize) {
@@ -56,19 +81,17 @@ export default {
 
       let domWidth = 0
       let sliderWidth = this.$refs.slider.clientWidth
-
       for (let i = 0; i < this.children.length; i++) {
         let child = this.children[i]
         addClass(child, 'slider-item')
 
         child.style.width = sliderWidth + 'px'
         domWidth += sliderWidth
-
-        if (this.loop && !isResize) {
-          domWidth += 2 * sliderWidth
-        }
-        this.$refs.sliderGroup.style.width = domWidth + 'px'
       }
+      if (this.loop && !isResize) {
+        domWidth += 2 * sliderWidth
+      }
+      this.$refs.sliderGroup.style.width = domWidth + 'px'
     },
     _initSlider () {
       this.slider = new BScroll(this.$refs.slider, {
@@ -80,6 +103,38 @@ export default {
         snapThreshold: 0.3,
         snapSpeed: 400
       })
+
+      this.slider.on('scrollEnd', () => {
+        let pageIndex = this.slider.getCurrentPage().pageX
+        if (this.loop) {
+          pageIndex -= 1
+        }
+        this.currentPageIndex = pageIndex
+
+        if (this.autoPlay) {
+          this._play()
+        }
+      })
+
+      this.slider.on('beforeScrollStart', () => {
+        if (this.autoPlay) {
+          clearTimeout(this.timer)
+        }
+      })
+    },
+
+    _initDots () {
+      this.dots = new Array(this.children.length)
+    },
+
+    _play () {
+      let pageIndex = this.currentPageIndex + 1
+      if (this.loop) {
+        pageIndex += 1
+      }
+      this.timer = setTimeout(() => {
+        this.slider.goToPage(pageIndex, 0, 400)
+      }, this.interval)
     }
   }
 }
@@ -88,7 +143,7 @@ export default {
 <style lang="stylus" scoped rel="stylesheet/stylus">
 @import '~common/stylus/variable';
 
-.slider {
+.slider
     min-height: 1px;
 
     .slider-group {
@@ -115,5 +170,22 @@ export default {
             }
         }
     }
-}
+    .dots
+      position: absolute
+      right: 0
+      left: 0
+      bottom: 12px
+      text-align: center
+      font-size: 0
+      .dot
+        display: inline-block
+        margin: 0 4px
+        width: 8px
+        height: 8px
+        border-radius: 50%
+        background: $color-text-l
+        &.active
+          width: 20px
+          border-radius: 5px
+          background: $color-text-ll
 </style>

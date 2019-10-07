@@ -1,11 +1,11 @@
 /*
  * @Date: 2019-09-07 23:44:03
  * @LastEditors: PoloHuang
- * @LastEditTime: 2019-09-08 19:54:54
+ * @LastEditTime: 2019-09-15 12:12:18
  */
 import originJsonp from 'jsonp'
 
-export default function json (url, data, option) {
+export default function jsonp (url, data, option) {
   url += (url.indexOf('?') < 0 ? '?' : '&') + param(data)
 
   return new Promise((resolve, reject) => {

@@ -1,7 +1,7 @@
 <!--
  * @Date: 2019-09-08 18:48:02
  * @LastEditors: PoloHuang
- * @LastEditTime: 2019-09-12 23:38:31
+ * @LastEditTime: 2019-09-18 23:30:57
  -->
 <template>
   <div class="recommend" ref="recommend">
@@ -16,6 +16,20 @@
             </div>
         </slider>
       </div>
+      <div class="recommend-list">
+        <h1 class="list-title">热门歌单推荐</h1>
+        <ul>
+          <li @click="selectItem(item)" v-for="(item, index) in discList" :key="index" class="item">
+            <div class="icon">
+              <img width="60" height="60" v-lazy="item.imgurl">
+            </div>
+            <div class="text">
+              <h2 class="name" v-html="item.creator.name"></h2>
+              <p class="desc" v-html="item.dissname"></p>
+            </div>
+          </li>
+        </ul>
+    </div>
     </div>
     <!-- </scroll> -->
   </div>
@@ -23,7 +37,6 @@
 <script>
 import { getRecommend, getDiscList } from 'api/recommend'
 import Slider from 'base/slider/slider'
-import { ERR_OK } from 'api/config'
 export default {
   data () {
     return {
@@ -40,13 +53,11 @@ export default {
   methods: {
     async _getRecommend () {
       let res = await getRecommend()
-      if (res.code === ERR_OK) {
-        this.recommends = res.data.slider
-      }
+      this.recommends = res.data.slider
     },
 
-    _getDiscList () {
-      console.log(getDiscList)
+    async _getDiscList () {
+      this.discList = getDiscList
     }
   },
   components: {
@@ -68,4 +79,33 @@ export default {
         position: relative
         width: 100%
         overflow: hidden
+      .recommend-list
+        .list-title
+          height: 65px
+          line-height: 65px
+          text-align: center
+          font-size: $font-size-medium
+          color: $color-theme
+        .item
+          display: flex
+          box-sizing: border-box
+          align-items: center
+          padding: 0 20px 20px 20px
+          .icon
+            flex: 0 0 60px
+            width: 60px
+            padding-right: 20px
+          .text
+            display: flex
+            flex-direction: column
+            justify-content: center
+            flex: 1
+            line-height: 20px
+            overflow: hidden
+            font-size: $font-size-medium
+            .name
+              margin-bottom: 10px
+              color: $color-text
+            .desc
+              color: $color-text-d
 </style>

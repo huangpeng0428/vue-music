@@ -1,7 +1,7 @@
 /*
  * @Date: 2019-09-07 22:35:20
  * @LastEditors: PoloHuang
- * @LastEditTime: 2019-09-08 00:11:56
+ * @LastEditTime: 2019-09-16 21:58:44
  */
 'use strict'
 const path = require('path')
@@ -66,6 +66,10 @@ module.exports = {
           limit: 10000,
           name: utils.assetsPath('img/[name].[hash:7].[ext]')
         }
+      },
+      {
+        test: /\.scss$/,
+        loaders: ["style", "css", "sass"]
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,

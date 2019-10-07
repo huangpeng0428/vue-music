@@ -1,8 +1,14 @@
+/*
+ * @Date: 2019-09-07 22:35:20
+ * @LastEditors: PoloHuang
+ * @LastEditTime: 2019-09-18 23:13:48
+ */
 'use strict'
 // Template version: 1.3.1
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require('path')
+const axios = require('axios')
 
 module.exports = {
   dev: {
@@ -74,3 +80,23 @@ module.exports = {
     bundleAnalyzerReport: process.env.npm_config_report
   }
 }
+
+var express = require('express')
+var app = express()
+var apiRoutes = express.Router()
+apiRoutes.get('/getDiscList', function (req, res) {
+  console.log(req.query)
+  var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+  axios.get(url, {
+    headers: {
+      referer: 'https://c.y.qq.com/',
+      host: 'c.y.qq.com'
+    },
+    params: req.query
+  }).then((response) => {
+    res.json(response.data)
+  }).catch((e) => {
+    console.log(e)
+  })
+})
+app.use('/api', apiRoutes)
